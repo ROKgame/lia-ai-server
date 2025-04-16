@@ -1,0 +1,82 @@
+[
+  {
+    "type": "project_content",
+    "content": "今天完成了登入功能。",
+    "timestamp": "2025-04-15T19:43:23.202Z"
+  },
+  {
+    "type": "project_content",
+    "content": "今天完成了技能系統的初版設計。",
+    "timestamp": "2025-04-15T19:46:47.404Z"
+  },
+  {
+    "type": "project_content",
+    "content": "我剛完成角色升級功能的 UI。",
+    "timestamp": "2025-04-15T20:30:28.308Z"
+  },
+  {
+    "type": "gpt_reply",
+    "content": "已記錄：你剛完成了角色升級功能的 UI。",
+    "timestamp": "2025-04-15T20:30:28.309Z"
+  },
+  {
+    "type": "casual_chat",
+    "content": "幫我看看最近任務是什麼",
+    "timestamp": "2025-04-15T20:53:03.156Z"
+  },
+  {
+    "type": "gpt_reply",
+    "content": "最近完成的任務是角色升級功能的 UI。",
+    "timestamp": "2025-04-15T20:53:03.157Z"
+  },
+  {
+    "type": "project_content",
+    "content": "你還記得我們做過哪些功能嗎？",
+    "timestamp": "2025-04-15T20:53:24.376Z"
+  },
+  {
+    "type": "gpt_reply",
+    "content": "你們已經完成了登入功能、技能系統的初版設計，以及角色升級功能的 UI。",
+    "timestamp": "2025-04-15T20:53:24.376Z"
+  },
+  {
+    "type": "casual_chat",
+    "content": "你是誰",
+    "timestamp": "2025-04-15T21:46:23.401Z"
+  },
+  {
+    "type": "gpt_reply",
+    "content": "我是你的 AI 助理，專門幫助你跟蹤和記錄項目進度、回答問題，以及提供其他協助。你可以問我關於你已經完成的任務和其他相關資訊。",
+    "timestamp": "2025-04-15T21:46:23.401Z"
+  },
+  {
+    "type": "casual_chat",
+    "content": "這是什麼",
+    "timestamp": "2025-04-15T22:23:21.893Z"
+  },
+  {
+    "type": "gpt_reply",
+    "content": "這是一張描繪了一位年輕女性的照片。她坐在窗邊，穿著淺色的裙子，對鏡頭擺出沉思的姿態。這張照片的氛圍很柔和。不過，我不能識別圖片中的人物是誰。",
+    "timestamp": "2025-04-15T22:23:21.894Z"
+  },
+  {
+    "type": "casual_chat",
+    "content": "",
+    "timestamp": "2025-04-15T23:07:42.175Z"
+  },
+  {
+    "type": "gpt_reply",
+    "content": "這張圖片顯示了一個用於筆記記錄和功能任務的介面。圖片包括了一個文件夾圖標和標有 \"筆記記錄\" 和 \"功能任務\" 的選項按鈕。整體設計看起來很簡潔。",
+    "timestamp": "2025-04-15T23:07:42.176Z"
+  },
+  {
+    "type": "casual_chat",
+    "content": "",
+    "timestamp": "2025-04-15T23:07:57.040Z"
+  },
+  {
+    "type": "gpt_reply",
+    "content": "這張圖片是全黑的，看不出明顯的內容。可能是因為拍攝條件或圖像損壞導致的。",
+    "timestamp": "2025-04-15T23:07:57.041Z"
+  }
+]
