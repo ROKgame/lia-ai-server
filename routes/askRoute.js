@@ -1,12 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const { Configuration, OpenAIApi } = require('openai');
+const OpenAI = require('openai');
 
-// 從環境變數讀取 API 金鑰
-const configuration = new Configuration({
+// ✅ 修正初始化 OpenAI 的方式
+const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
-const openai = new OpenAIApi(configuration);
 
 // POST /api/ask
 router.post('/', async (req, res) => {
