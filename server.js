@@ -86,6 +86,10 @@ mongoose.connect("mongodb+srv://Lia-AI:ailia@ai.nrelirl.mongodb.net/?retryWrites
 }).then(() => console.log("✅ MongoDB 已連線"))
   .catch(err => console.error("❌ MongoDB 連線失敗", err));
 
+app.get('/', (req, res) => {
+  res.send('Hello! Lia AI server is running 🚀');
+});
+
 app.listen(PORT, () => {
   console.log(`✅ 伺服器已啟動：http://localhost:${PORT}`);
 });
