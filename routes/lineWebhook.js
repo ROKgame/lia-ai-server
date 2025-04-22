@@ -15,7 +15,10 @@ const openai = new OpenAI({
 
 // ✅ 驗證 LINE 簽章是否合法
 function validateSignature(body, signature, channelSecret) {
-  const hash = crypto.createHmac('SHA256', channelSecret).update(body).digest('base64');
+  const hash = crypto.createHmac('sha256', channelSecret)
+  .update(JSON.stringify(body))
+  .digest('base64');
+
   return hash === signature;
 }
 
@@ -27,7 +30,7 @@ async function replyMessage(replyToken, message, channelAccessToken) {
   }, {
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${LINE_CHANNEL_ACCESS_TOKEN}`
+      Authorization: `Bearer ${channelAccessToken}`
     }
   });
 }
