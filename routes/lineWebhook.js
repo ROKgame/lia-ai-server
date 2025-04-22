@@ -1,8 +1,9 @@
 // ✅ 完整的 LINE Webhook 路由邏輯：routes/lineWebhook.js
 const express = require('express');
 const router = express.Router();
-const { Configuration, OpenAIApi } = require('openai');
 const axios = require('axios');
+const { Configuration, OpenAIApi } = require('openai');
+const LINE_CHANNEL_ACCESS_TOKEN = process.env.LINE_CHANNEL_ACCESS_TOKEN;
 const crypto = require('crypto');
 
 // ✅ 初始化 OpenAI
@@ -25,7 +26,7 @@ async function replyMessage(replyToken, message, channelAccessToken) {
   }, {
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${channelAccessToken}`
+      Authorization: `Bearer ${LINE_CHANNEL_ACCESS_TOKEN}`
     }
   });
 }
