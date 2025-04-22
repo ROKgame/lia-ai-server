@@ -10,7 +10,7 @@ const crypto = require('crypto');
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
-const openai = new OpenAIApi(configuration);
+
 
 // ✅ 驗證 LINE 簽章是否合法
 function validateSignature(body, signature, channelSecret) {
