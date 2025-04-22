@@ -1,4 +1,5 @@
 // ✅ 完整的 LINE Webhook 路由邏輯：routes/lineWebhook.js
+console.log('Secret:', process.env.LINE_CHANNEL_SECRET); // 除錯用，部署時刪掉
 const express = require('express');
 const router = express.Router();
 const axios = require('axios');
