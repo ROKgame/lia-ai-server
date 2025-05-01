@@ -40,7 +40,7 @@ async function replyMessage(replyToken, message, channelAccessToken) {
 
 
 // ✅ LINE Webhook 接收與處理
-router.post('/line', express.raw({ type: '*/*' }), async (req, res) => {
+router.post('/api/line', express.raw({ type: '*/*' }), async (req, res) => {
   const signature = req.headers['x-line-signature'];
   const body = req.body.toString();
   const isValid = validateSignature(body, signature, LINE_CHANNEL_SECRET);
