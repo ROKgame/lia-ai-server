@@ -47,7 +47,9 @@ async function replyMessage(replyToken, message, channelAccessToken) {
 // ✅ LINE Webhook 接收與處理
 router.post('/api/line', express.raw({ type: '*/*' }), async (req, res) => {
   const signature = req.headers['x-line-signature'];
-  const body = req.body.toString();
+  const getRawBody = require('raw-body');
+
+  const body = await getRawBody(req);
   const isValid = validateSignature(body, signature, LINE_CHANNEL_SECRET);
 
   if (!isValid) return res.status(403).send('Invalid signature');
