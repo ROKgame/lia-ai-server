@@ -10,6 +10,11 @@ const LINE_CHANNEL_ACCESS_TOKEN = process.env.LINE_CHANNEL_ACCESS_TOKEN;
 const LINE_CHANNEL_SECRET = process.env.LINE_CHANNEL_SECRET;
 
 
+// ✅ 加入 debug 用的 log（加在這）
+console.log('🔐 Channel Secret:', LINE_CHANNEL_SECRET);
+console.log('🔐 Access Token:', LINE_CHANNEL_ACCESS_TOKEN);
+
+
 // ✅ 初始化 OpenAI
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
