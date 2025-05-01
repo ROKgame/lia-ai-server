@@ -61,14 +61,15 @@ router.post('/api/line', express.raw({ type: '*/*' }), async (req, res) => {
     if (event.type === 'message' && event.message.type === 'text') {
       const prompt = event.message.text;
       try {
-        const response = await openai.chat.completions.create({
+        const response = await openai.createChatCompletion({
           model: 'gpt-3.5-turbo',
           messages: [{ role: 'user', content: prompt }],
         });
 
-        const replyText = response.choices[0].message.content;
+        const replyText = response.data.choices[0].message.content;
         await replyMessage(event.replyToken, replyText, token);
       } catch (err) {
+        console.error('❌ 發生錯誤：', err); // <<--- 加上這行
         await replyMessage(event.replyToken, '⚠️ 無法取得回覆，請稍後再試', token);
       }
     }
