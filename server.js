@@ -81,7 +81,8 @@ app.use("/api/feature", require("./routes/featureRoutes"));
 app.use('/api/ask', require('./routes/askRoute'));
 
 // ✅ 加入 LINE webhook 路由
-app.use('/api', require('./routes/lineWebhook'));
+const lineWebhook = require('./routes/lineWebhook');
+app.use('/', lineWebhook);
 
 // ✅ MongoDB 連線
 mongoose.connect("mongodb+srv://Lia-AI:ailia@ai.nrelirl.mongodb.net/?retryWrites=true&w=majority&appName=AI", {
