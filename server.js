@@ -1,6 +1,7 @@
 // server.js：支援 GPT-4 Vision 圖片輸入 + 記憶儲存 + 功能記憶 API + 璃亞人格注入
 require("dotenv").config();
 const express = require("express");
+const lineWebhook = require("./routes/lineWebhook");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const fs = require("fs");
@@ -75,14 +76,13 @@ app.post("/api/chat", async (req, res) => {
   }
 });
 
+// ✅ 加入 LINE webhook 路由
+app.use("/api/line", express.raw({ type: "*/*" }), lineWebhook);
+
 // ✅ MongoDB 路由整合
 app.use("/api", require("./routes/messageRoutes"));
 app.use("/api/feature", require("./routes/featureRoutes"));
 app.use("/api/ask", require("./routes/askRoute"));
-
-// ✅ 加入 LINE webhook 路由
-const lineWebhook = require("./routes/lineWebhook");
-app.use("/", lineWebhook);
 
 // ✅ MongoDB 連線
 mongoose.connect("mongodb+srv://Lia-AI:ailia@ai.nrelirl.mongodb.net/?retryWrites=true&w=majority&appName=AI", {

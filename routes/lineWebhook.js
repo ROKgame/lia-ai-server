@@ -48,8 +48,7 @@ async function replyMessage(replyToken, message, channelAccessToken) {
 
 // ✅ LINE Webhook 接收與處理
 router.post("/api/line", async (req, res) => {
-  const getRawBody = require("raw-body");
-  const body = await getRawBody(req);
+  const body = req.body;
 
   const signature = req.headers["x-line-signature"];
   const isValid = validateSignature(body, signature, LINE_CHANNEL_SECRET);

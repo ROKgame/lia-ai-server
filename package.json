@@ -18,7 +18,6 @@
     "lucide-react": "^0.488.0",
     "moment": "^2.30.1",
     "mongoose": "^8.13.2",
-    "openai": "^4.95.1",
-    "raw-body": "^3.0.0"
+    "openai": "^4.95.1"
   }
 }
