@@ -45,15 +45,17 @@ async function replyMessage(replyToken, message, channelAccessToken) {
 router.post("/", express.raw({ type: "*/*" }), async (req, res) => {
   try {
     const signature = req.headers["x-line-signature"];
-    const body = req.body;
+    const bodyBuffer = req.body;
 
-    const isValid = validateSignature(body, signature, LINE_CHANNEL_SECRET);
+    const isValid = validateSignature(bodyBuffer, signature, LINE_CHANNEL_SECRET);
     if (!isValid) return res.status(403).send("Invalid signature");
 
-    const events = JSON.parse(body.toString()).events;
+    const body = JSON.parse(bodyBuffer.toString());
+    if (!body.events || body.events.length === 0) return res.status(200).send("No events");
+
     const token = LINE_CHANNEL_ACCESS_TOKEN;
 
-    for (const event of events) {
+    for (const event of body.events) {
       if (event.type === "message" && event.message.type === "text") {
         const prompt = event.message.text;
         try {
