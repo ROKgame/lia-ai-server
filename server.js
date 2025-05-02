@@ -1,17 +1,23 @@
 // server.js：支援 GPT-4 Vision 圖片輸入 + 記憶儲存 + 功能記憶 API + 璃亞人格注入
 require("dotenv").config();
 const express = require("express");
+const router = express.Router();
 const lineWebhook = require("./routes/lineWebhook");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const fs = require("fs");
 const OpenAI = require("openai");
 const app = express();
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
 });
+
+router.post('/', async (req, res) => {
+  // 處理 webhook POST 請求
+});
+module.exports = router;
 
 app.use(cors());
 app.use(express.json({ limit: "10mb" })); // 支援圖片 base64 輸入
@@ -95,6 +101,5 @@ app.get("/", (req, res) => {
   res.send("Hello! Lia AI server is running 🚀");
 });
 
-app.listen(PORT, () => {
-  console.log(`✅ 伺服器已啟動：http://localhost:${PORT}`);
+app.listen(PORT, () => console.log(`✅ Server running on ${PORT}`));
 });
