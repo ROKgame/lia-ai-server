@@ -6,6 +6,7 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const fs = require("fs");
 const OpenAI = require("openai");
+const bodyParser = require("body-parser");
 const app = express();
 const PORT = process.env.PORT || 3001;
 
@@ -14,7 +15,10 @@ const openai = new OpenAI({
 });
 
 app.use(cors());
-app.use('/api/line', express.raw({ type: '*/*' }), require('./routes/lineWebhook'));
+app.use(bodyParser.json());
+
+// ✅ 修改為 /line 並確保不重複使用 raw parser 影響其他 API
+app.use('/line', express.raw({ type: '*/*' }), lineWebhook);
 
 // ✅ 載入璃亞人格設定檔
 const soul = fs.readFileSync("./lia_soul_profile_v1.txt", "utf8");
@@ -39,13 +43,20 @@ function filterMemoryByType(input, memory) {
   return memory;
 }
 
+function categorize(input) {
+  if (/任務|進度/.test(input)) return "task_update";
+  if (/bug|錯誤/.test(input)) return "bug_fix";
+  if (/功能|專案/.test(input)) return "project_content";
+  return "other";
+}
+
 app.post("/api/chat", async (req, res) => {
   const { message, image } = req.body;
   const memory = filterMemoryByType(message, loadMemory());
   const memoryText = memory.map((m, i) => `(${i + 1}) [${m.type}] ${m.content}`).join("\n");
 
   const messages = [
-    { role: "system", content: soul }, // 注入璃亞靈魂設定
+    { role: "system", content: soul },
     { role: "user", content: `以下是你的記憶資料：\n${memoryText}\n\n接下來是使用者的輸入：` }
   ];
 
@@ -75,9 +86,6 @@ app.post("/api/chat", async (req, res) => {
     res.status(500).json({ reply: "⚠️ 無法取得 AI 回覆，請稍後再試。" });
   }
 });
-
-// ✅ 加入 LINE webhook 路由
-app.use("/api/line", express.raw({ type: "*/*" }), lineWebhook);
 
 // ✅ MongoDB 路由整合
 app.use("/api", require("./routes/messageRoutes"));
