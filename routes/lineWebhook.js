@@ -20,6 +20,8 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+console.log('✅ OpenAI Key:', process.env.OPENAI_API_KEY);
+
 
 // ✅ 驗證 LINE 簽章是否合法
 function validateSignature(body, signature, channelSecret) {
