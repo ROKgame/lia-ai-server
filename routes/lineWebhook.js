@@ -47,7 +47,7 @@ async function replyMessage(replyToken, message, channelAccessToken) {
 
 
 // ✅ LINE Webhook 接收與處理
-router.post("/api/line", async (req, res) => {
+router.post('/', async (req, res) => {
   const body = req.body;
 
   const signature = req.headers["x-line-signature"];

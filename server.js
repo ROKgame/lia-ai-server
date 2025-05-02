@@ -1,7 +1,6 @@
 // server.js：支援 GPT-4 Vision 圖片輸入 + 記憶儲存 + 功能記憶 API + 璃亞人格注入
 require("dotenv").config();
 const express = require("express");
-const router = express.Router();
 const lineWebhook = require("./routes/lineWebhook");
 const cors = require("cors");
 const mongoose = require("mongoose");
@@ -14,13 +13,8 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
 });
 
-router.post('/', async (req, res) => {
-  // 處理 webhook POST 請求
-});
-module.exports = router;
-
 app.use(cors());
-app.use(express.json({ limit: "10mb" })); // 支援圖片 base64 輸入
+app.use('/api/line', express.raw({ type: '*/*' }), require('./routes/lineWebhook'));
 
 // ✅ 載入璃亞人格設定檔
 const soul = fs.readFileSync("./lia_soul_profile_v1.txt", "utf8");
@@ -102,4 +96,3 @@ app.get("/", (req, res) => {
 });
 
 app.listen(PORT, () => console.log(`✅ Server running on ${PORT}`));
-});
