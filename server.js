@@ -78,11 +78,11 @@ app.post("/api/chat", async (req, res) => {
 // ✅ MongoDB 路由整合
 app.use("/api", require("./routes/messageRoutes"));
 app.use("/api/feature", require("./routes/featureRoutes"));
-app.use('/api/ask', require('./routes/askRoute'));
+app.use("/api/ask", require("./routes/askRoute"));
 
 // ✅ 加入 LINE webhook 路由
-const lineWebhook = require('./routes/lineWebhook');
-app.use('/', lineWebhook);
+const lineWebhook = require("./routes/lineWebhook");
+app.use("/", lineWebhook);
 
 // ✅ MongoDB 連線
 mongoose.connect("mongodb+srv://Lia-AI:ailia@ai.nrelirl.mongodb.net/?retryWrites=true&w=majority&appName=AI", {
@@ -91,8 +91,8 @@ mongoose.connect("mongodb+srv://Lia-AI:ailia@ai.nrelirl.mongodb.net/?retryWrites
 }).then(() => console.log("✅ MongoDB 已連線"))
   .catch(err => console.error("❌ MongoDB 連線失敗", err));
 
-app.get('/', (req, res) => {
-  res.send('Hello! Lia AI server is running 🚀');
+app.get("/", (req, res) => {
+  res.send("Hello! Lia AI server is running 🚀");
 });
 
 app.listen(PORT, () => {
