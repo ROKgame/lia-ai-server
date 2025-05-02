@@ -42,35 +42,40 @@ async function replyMessage(replyToken, message, channelAccessToken) {
 }
 
 // ✅ LINE Webhook 接收與處理
-router.post('/', express.raw({ type: '*/*' }), async (req, res) => {
-  const signature = req.headers["x-line-signature"];
-  const body = req.body;
+router.post("/", express.raw({ type: "*/*" }), async (req, res) => {
+  try {
+    const signature = req.headers["x-line-signature"];
+    const body = req.body;
 
-  const isValid = validateSignature(body, signature, LINE_CHANNEL_SECRET);
-  if (!isValid) return res.status(403).send("Invalid signature");
+    const isValid = validateSignature(body, signature, LINE_CHANNEL_SECRET);
+    if (!isValid) return res.status(403).send("Invalid signature");
 
-  const events = JSON.parse(body.toString()).events;
-  const token = LINE_CHANNEL_ACCESS_TOKEN;
+    const events = JSON.parse(body.toString()).events;
+    const token = LINE_CHANNEL_ACCESS_TOKEN;
 
-  for (const event of events) {
-    if (event.type === "message" && event.message.type === "text") {
-      const prompt = event.message.text;
-      try {
-        const response = await openai.chat.completions.create({
-          model: "gpt-3.5-turbo",
-          messages: [{ role: "user", content: prompt }],
-        });
+    for (const event of events) {
+      if (event.type === "message" && event.message.type === "text") {
+        const prompt = event.message.text;
+        try {
+          const response = await openai.chat.completions.create({
+            model: "gpt-3.5-turbo",
+            messages: [{ role: "user", content: prompt }],
+          });
 
-        const replyText = response.choices[0].message.content;
-        await replyMessage(event.replyToken, replyText, token);
-      } catch (err) {
-        console.error("❌ 發生錯誤：", err);
-        await replyMessage(event.replyToken, "⚠️ 無法取得回覆，請稍後再試", token);
+          const replyText = response.choices[0].message.content;
+          await replyMessage(event.replyToken, replyText, token);
+        } catch (err) {
+          console.error("❌ OpenAI 回覆錯誤：", err);
+          await replyMessage(event.replyToken, "⚠️ 無法取得回覆，請稍後再試", token);
+        }
       }
     }
-  }
 
-  res.status(200).send("OK");
+    res.status(200).send("OK");
+  } catch (err) {
+    console.error("❌ Webhook 主體錯誤：", err);
+    res.status(500).send("Internal Server Error");
+  }
 });
 
 module.exports = router;
