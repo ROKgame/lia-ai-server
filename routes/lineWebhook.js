@@ -47,6 +47,11 @@ router.post("/", express.raw({ type: "*/*" }), async (req, res) => {
     const signature = req.headers["x-line-signature"];
     const bodyBuffer = req.body;
 
+    if (!Buffer.isBuffer(bodyBuffer)) {
+      console.error("❌ Invalid body: not a buffer");
+      return res.status(400).send("Bad Request");
+    }
+
     const isValid = validateSignature(bodyBuffer, signature, LINE_CHANNEL_SECRET);
     if (!isValid) return res.status(403).send("Invalid signature");
 
