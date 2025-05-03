@@ -21,9 +21,9 @@ const openai = new OpenAI({
 console.log('✅ OpenAI Key:', process.env.OPENAI_API_KEY);
 
 // ✅ 驗證 LINE 簽章是否合法
-function validateSignature(body, signature, channelSecret) {
+function validateSignature(bodyBuffer, signature, channelSecret) {
   const hash = crypto.createHmac("sha256", channelSecret)
-    .update(body)
+    .update(bodyBuffer)
     .digest("base64");
   return hash === signature;
 }
@@ -49,7 +49,7 @@ router.post("/", express.raw({ type: "*/*" }), async (req, res) => {
 
     if (!Buffer.isBuffer(bodyBuffer)) {
       console.error("❌ Invalid body: not a buffer");
-      return res.status(400).send("Bad Request");
+      return res.status(400).send("Invalid body");
     }
 
     const isValid = validateSignature(bodyBuffer, signature, LINE_CHANNEL_SECRET);
