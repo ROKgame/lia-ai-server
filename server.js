@@ -20,7 +20,7 @@ app.use(cors());
 app.use(express.json()); // ✅ 給非 LINE API 路由使用
 
 // ✅ LINE webhook 必須使用 raw parser（已在 route 裡指定）
-app.use("/api", lineWebhook);
+app.use("/line", lineWebhook);
 
 // ✅ 記憶功能
 const memoryPath = "./memory.json";

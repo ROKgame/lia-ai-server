@@ -42,7 +42,7 @@ async function replyMessage(replyToken, message, channelAccessToken) {
 }
 
 // ✅ LINE Webhook 接收與處理
-router.post("/line", express.raw({ type: "application/json" }), async (req, res) => {
+router.post("/", express.raw({ type: "application/json" }), async (req, res) => {
   try {
     const signature = req.headers["x-line-signature"];
     const bodyBuffer = req.body;
