@@ -1,26 +1,88 @@
-// ✅ server.js：修正重複使用 express.raw 的問題 + 完整功能整合
+// ✅ server.js：整合 LINE Webhook + GPT 聊天 + 記憶系統 + MongoDB 路由
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const fs = require("fs");
 const OpenAI = require("openai");
-const lineWebhook = require("./routes/lineWebhook");
+const crypto = require("crypto");
+const axios = require("axios");
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-
-// ✅ 載入璃亞人格設定檔
 const soul = fs.readFileSync("./lia_soul_profile_v1.txt", "utf8");
 
 // ✅ 中介層
 app.use(cors());
-app.use(express.json()); // ✅ 給非 LINE API 路由使用
+app.use(express.json());
 
-// ✅ LINE webhook 必須使用 raw parser（已在 route 裡指定）
-app.use("/line", lineWebhook);
+// ✅ LINE Webhook 路由
+app.post("/line", express.raw({ type: "application/json" }), async (req, res) => {
+  try {
+    const signature = req.headers["x-line-signature"];
+    const bodyBuffer = req.body;
+
+    if (!Buffer.isBuffer(bodyBuffer)) {
+      console.error("❌ Invalid body: not a buffer");
+      return res.status(400).send("Invalid body");
+    }
+
+    const hash = crypto.createHmac("sha256", process.env.LINE_CHANNEL_SECRET)
+      .update(bodyBuffer)
+      .digest("base64");
+
+    if (hash !== signature) {
+      console.error("❌ 簽名驗證失敗");
+      return res.status(403).send("Invalid signature");
+    }
+
+    const body = JSON.parse(bodyBuffer.toString());
+    if (!body.events || body.events.length === 0) return res.status(200).send("No events");
+
+    const token = process.env.LINE_CHANNEL_ACCESS_TOKEN;
+
+    for (const event of body.events) {
+      if (event.type === "message" && event.message.type === "text") {
+        const prompt = event.message.text;
+        try {
+          const response = await openai.chat.completions.create({
+            model: "gpt-3.5-turbo",
+            messages: [{ role: "user", content: prompt }],
+          });
+
+          const replyText = response.choices[0].message.content;
+          await axios.post("https://api.line.me/v2/bot/message/reply", {
+            replyToken: event.replyToken,
+            messages: [{ type: "text", text: replyText }],
+          }, {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          });
+        } catch (err) {
+          console.error("❌ 回覆錯誤：", err);
+          await axios.post("https://api.line.me/v2/bot/message/reply", {
+            replyToken: event.replyToken,
+            messages: [{ type: "text", text: "⚠️ 無法取得回覆，請稍後再試" }],
+          }, {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          });
+        }
+      }
+    }
+
+    res.status(200).send("OK");
+  } catch (err) {
+    console.error("❌ Webhook 錯誤：", err);
+    res.status(500).send("Internal Server Error");
+  }
+});
 
 // ✅ 記憶功能
 const memoryPath = "./memory.json";
