@@ -1,55 +1,52 @@
-// server.js：支援 GPT-4 Vision 圖片輸入 + 記憶儲存 + 功能記憶 API + 璃亞人格注入
+// ✅ server.js：修正重複使用 express.raw 的問題 + 完整功能整合
 require("dotenv").config();
 const express = require("express");
-const lineWebhook = require("./routes/lineWebhook");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const fs = require("fs");
 const OpenAI = require("openai");
-const bodyParser = require("body-parser");
+const lineWebhook = require("./routes/lineWebhook");
+
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
-});
-
-app.use(cors());
-app.use(bodyParser.json());
-
-// ✅ 修改為 /line 並確保不重複使用 raw parser 影響其他 API
-app.use('/line', express.raw({ type: '*/*' }), lineWebhook);
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 // ✅ 載入璃亞人格設定檔
 const soul = fs.readFileSync("./lia_soul_profile_v1.txt", "utf8");
 
+// ✅ 中介層
+app.use(cors());
+app.use(express.json()); // ✅ 給非 LINE API 路由使用
+
+// ✅ LINE webhook 必須使用 raw parser（已在 route 裡指定）
+app.use("/api/line", lineWebhook);
+
+// ✅ 記憶功能
 const memoryPath = "./memory.json";
 function loadMemory() {
   if (!fs.existsSync(memoryPath)) return [];
   return JSON.parse(fs.readFileSync(memoryPath, "utf8"));
 }
-
 function saveMemory(type, content) {
   const memory = loadMemory();
-  const newItem = { type, content, timestamp: new Date().toISOString() };
-  memory.push(newItem);
+  memory.push({ type, content, timestamp: new Date().toISOString() });
   fs.writeFileSync(memoryPath, JSON.stringify(memory, null, 2));
 }
-
 function filterMemoryByType(input, memory) {
   if (/任務|進度/.test(input)) return memory.filter(m => m.type === "task_update");
   if (/bug|錯誤/.test(input)) return memory.filter(m => m.type === "bug_fix");
   if (/功能|專案/.test(input)) return memory.filter(m => m.type === "project_content");
   return memory;
 }
-
-function categorize(input) {
-  if (/任務|進度/.test(input)) return "task_update";
-  if (/bug|錯誤/.test(input)) return "bug_fix";
-  if (/功能|專案/.test(input)) return "project_content";
-  return "other";
+function categorize(message) {
+  if (/任務|進度/.test(message)) return "task_update";
+  if (/bug|錯誤/.test(message)) return "bug_fix";
+  if (/功能|專案/.test(message)) return "project_content";
+  return "general";
 }
 
+// ✅ Chat API
 app.post("/api/chat", async (req, res) => {
   const { message, image } = req.body;
   const memory = filterMemoryByType(message, loadMemory());
@@ -73,10 +70,7 @@ app.post("/api/chat", async (req, res) => {
   }
 
   try {
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4o",
-      messages
-    });
+    const completion = await openai.chat.completions.create({ model: "gpt-4o", messages });
     const reply = completion.choices[0].message.content;
     saveMemory(categorize(message), message);
     saveMemory("gpt_reply", reply);
@@ -93,14 +87,16 @@ app.use("/api/feature", require("./routes/featureRoutes"));
 app.use("/api/ask", require("./routes/askRoute"));
 
 // ✅ MongoDB 連線
-mongoose.connect("mongodb+srv://Lia-AI:ailia@ai.nrelirl.mongodb.net/?retryWrites=true&w=majority&appName=AI", {
+mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 }).then(() => console.log("✅ MongoDB 已連線"))
   .catch(err => console.error("❌ MongoDB 連線失敗", err));
 
+// ✅ 測試首頁
 app.get("/", (req, res) => {
   res.send("Hello! Lia AI server is running 🚀");
 });
 
+// ✅ 啟動服務
 app.listen(PORT, () => console.log(`✅ Server running on ${PORT}`));
