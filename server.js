@@ -29,7 +29,8 @@ app.post("/line", express.raw({ type: "application/json" }), async (req, res) =>
       return res.status(400).send("Invalid body");
     }
 
-    const hash = crypto.createHmac("sha256", process.env.LINE_CHANNEL_SECRET)
+    const hash = crypto
+      .createHmac("sha256", process.env.LINE_CHANNEL_SECRET)
       .update(bodyBuffer)
       .digest("base64");
 
@@ -39,7 +40,9 @@ app.post("/line", express.raw({ type: "application/json" }), async (req, res) =>
     }
 
     const body = JSON.parse(bodyBuffer.toString());
-    if (!body.events || body.events.length === 0) return res.status(200).send("No events");
+    if (!body.events || body.events.length === 0){
+     return res.status(200).send("No events");
+    }
 
     const token = process.env.LINE_CHANNEL_ACCESS_TOKEN;
 
@@ -52,11 +55,14 @@ app.post("/line", express.raw({ type: "application/json" }), async (req, res) =>
             messages: [{ role: "user", content: prompt }],
           });
 
-          const replyText = response.choices[0].message.content;
-          await axios.post("https://api.line.me/v2/bot/message/reply", {
+          const replyText = resp.choices[0].message.content;
+          await axios.post(
+          "https://api.line.me/v2/bot/message/reply", 
+          {
             replyToken: event.replyToken,
             messages: [{ type: "text", text: replyText }],
-          }, {
+          },
+          {
             headers: {
               "Content-Type": "application/json",
               Authorization: `Bearer ${token}`,
@@ -64,10 +70,15 @@ app.post("/line", express.raw({ type: "application/json" }), async (req, res) =>
           });
         } catch (err) {
           console.error("❌ 回覆錯誤：", err);
-          await axios.post("https://api.line.me/v2/bot/message/reply", {
+          await axios.post(
+          "https://api.line.me/v2/bot/message/reply", 
+          {
             replyToken: event.replyToken,
-            messages: [{ type: "text", text: "⚠️ 無法取得回覆，請稍後再試" }],
-          }, {
+            messages: [
+              { type: "text", text: "⚠️ 無法取得回覆，請稍後再試" },
+            ],
+          }, 
+          {
             headers: {
               "Content-Type": "application/json",
               Authorization: `Bearer ${token}`,
