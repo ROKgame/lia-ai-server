@@ -2,11 +2,11 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
-const mongoose = require("mongoose");
-const fs = require("fs");
-const OpenAI = require("openai");
 const crypto = require("crypto");
 const axios = require("axios");
+const OpenAI = require("openai");
+const fs = require("fs");
+const mongoose = require("mongoose");
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -16,7 +16,6 @@ const soul = fs.readFileSync("./lia_soul_profile_v1.txt", "utf8");
 
 // ✅ 中介層
 app.use(cors());
-app.use(express.json());
 
 // ✅ LINE Webhook 路由
 app.post("/line", express.raw({ type: "application/json" }), async (req, res) => {
@@ -55,7 +54,7 @@ app.post("/line", express.raw({ type: "application/json" }), async (req, res) =>
             messages: [{ role: "user", content: prompt }],
           });
 
-          const replyText = resp.choices[0].message.content;
+          const replyText = response.choices[0].message.content;
           await axios.post(
           "https://api.line.me/v2/bot/message/reply", 
           {
@@ -120,6 +119,7 @@ function categorize(message) {
 }
 
 // ✅ Chat API
+app.use(express.json());
 app.post("/api/chat", async (req, res) => {
   const { message, image } = req.body;
   const memory = filterMemoryByType(message, loadMemory());
