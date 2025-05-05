@@ -16,7 +16,13 @@ const soul = fs.readFileSync("./lia_soul_profile_v1.txt", "utf8");
 
 // ✅ 中介層
 app.use(cors());
-app.use(express.json());
+app.use((req, res, next) => {
+  if (req.path === "/line") {
+    express.raw({ type: "application/json" })(req, res, next);
+  } else {
+    express.json()(req, res, next);
+  }
+});
 
 // ✅ LINE Webhook 路由
 app.post("/line", express.raw({ type: "application/json" }), async (req, res) => {
