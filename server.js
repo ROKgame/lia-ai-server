@@ -14,15 +14,13 @@ const PORT = process.env.PORT || 3001;
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const soul = fs.readFileSync("./lia_soul_profile_v1.txt", "utf8");
 
+app.post("/line", express.raw({ type: "application/json" }), async (req, res) => {
+  // ... webhook 處理邏輯保持不變 ...
+});
+
 // ✅ 中介層
 app.use(cors());
-app.use((req, res, next) => {
-  if (req.path === "/line") {
-    express.raw({ type: "application/json" })(req, res, next);
-  } else {
-    express.json()(req, res, next);
-  }
-});
+app.use(express.json());
 
 // ✅ LINE Webhook 路由
 app.post("/line", express.raw({ type: "application/json" }), async (req, res) => {
